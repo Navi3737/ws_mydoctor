@@ -60,6 +60,12 @@
             }
 
         }
+        else if (isset($_REQUEST['email_forgot']))
+        {
+          $stmt = $mysqli->prepare("SELECT CONCAT(name,' ',last_name) as name, password FROM users where email = ?");
+          $stmt->bind_param('s', $email);
+          $email = $_REQUEST['email_forgot'];
+        }
         else
         {
           $stmt = $mysqli->prepare("SELECT * FROM users");

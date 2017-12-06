@@ -46,8 +46,8 @@ mb_http_output('UTF-8');
       break;
       //fin del select
       case "update_profile":
+      $aux = 0;
       $data = json_decode(file_get_contents('php://input'), true);
-
       $user_id = $data["user_id"];
       $last_name = $data["last_name"];
       $name = $data["name"];
@@ -55,20 +55,27 @@ mb_http_output('UTF-8');
       $user_type = $data["user_type"];
 
       $stmt = $mysqli->prepare("UPDATE users SET name = ?, last_name = ?, telephone = ? WHERE user_id = ? ");
-      $stmt->bind_param('ssss', $name, $last_name, $phone, $user_id);
+      $stmt->bind_param('sssi', $name, $last_name, $phone, $user_id);
       $stmt->execute();
       $arr = array('rows_affected' => $mysqli->affected_rows);
-      echo json_encode($arr);
+      $aux = $mysqli->affected_rows;
+      if ($aux > 0)
+      {
+        echo json_encode($arr);
+      }
       //ejecucion de la insercion de fecha de nacimiento y genero en caso de ser paciente
       if($user_type == 1)
       {
         $birth_date = $data["birth_date"];
         $gender = $data["gender"];
         $stmt = $mysqli->prepare("UPDATE patients SET birth_date= ?, gender = ? WHERE user_id = ?");
-        $stmt->bind_param('sss', $birth_date, $gender, $user_id);
+        $stmt->bind_param('ssi', $birth_date, $gender, $user_id);
         $stmt->execute();
-        $arr = array('rows_affected' => $mysqli->affected_rows);
-        echo json_encode($arr);
+        if ($aux == 0) {
+          $arr = array('rows_affected' => $mysqli->affected_rows);
+          echo json_encode($arr);
+        }
+
       }
       break;
       //fin del update profile

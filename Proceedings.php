@@ -13,7 +13,7 @@ mb_http_output('UTF-8');
       case "select_status":
         if (isset($_REQUEST['id']))
         {
-            $stmt = $mysqli->prepare("SELECT B.schedule_id, B.status as schedule_status, C.destiny_transfer_id, C.status as destiny_transfer_status,
+            $stmt = $mysqli->prepare("SELECT B.visit_date,B.schedule_id, B.status as schedule_status, C.destiny_transfer_id, C.status as destiny_transfer_status,
                                       D.hotel_transfer_id, D.status as hotel_transfer_status,
                                       E.performed_service_id,E.status as operation_status, F.origin_transfer_id, F.status as origin_transfer_status,
                                       G.after_service_id, G.status as after_service_status
@@ -58,16 +58,18 @@ mb_http_output('UTF-8');
 
         if (isset($_REQUEST['doctor']))
         {
-          $stmt = $mysqli->prepare("SELECT C.description, E.img_url, CONCAT(E.name,' ',E.last_name) as name, A.process_id FROM proceedings A JOIN requests B ON (A.request_id =
-          B.request_id) JOIN services C ON (C.service_id = B.service_id) JOIN patients D ON (D.patient_id = A.patient_id) JOIN users E ON (E.user_id = D.user_id) WHERE A.doctor_id= ? AND A.status = 0
+          $stmt = $mysqli->prepare("SELECT F.visit_date,C.description, E.img_url, CONCAT(E.name,' ',E.last_name) as name, A.process_id FROM proceedings A JOIN requests B ON (A.request_id =
+          B.request_id) JOIN services C ON (C.service_id = B.service_id) JOIN patients D ON (D.patient_id = A.patient_id) JOIN users E ON (E.user_id = D.user_id)
+          JOIN schedules F ON (F.process_id = A.process_id) WHERE A.doctor_id= ? AND A.status = 0
            ORDER BY A.process_id desc");
           $stmt->bind_param('i', $id);
           $id = $_REQUEST['doctor'];
 
         }
         elseif (isset($_REQUEST['patient'])) {
-          $stmt = $mysqli->prepare("SELECT C.description, E.img_url, CONCAT('Dr. ',E.name,' ',E.last_name) as name, A.process_id FROM proceedings A JOIN requests B ON (A.request_id =
-          B.request_id) JOIN services C ON (C.service_id = B.service_id) JOIN doctors D ON (D.doctor_id = A.doctor_id) JOIN users E ON (E.user_id = D.user_id) WHERE A.patient_id= ? AND A.status = 0
+          $stmt = $mysqli->prepare("SELECT F.visit_date, C.description, E.img_url, CONCAT('Dr. ',E.name,' ',E.last_name) as name, A.process_id FROM proceedings A JOIN requests B ON (A.request_id =
+          B.request_id) JOIN services C ON (C.service_id = B.service_id) JOIN doctors D ON (D.doctor_id = A.doctor_id) JOIN users E ON (E.user_id = D.user_id)
+          JOIN schedules F ON (F.process_id = A.process_id) WHERE A.patient_id= ? AND A.status = 0
           ORDER BY A.process_id desc");
           $stmt->bind_param('i', $id);
           $id = $_REQUEST['patient'];

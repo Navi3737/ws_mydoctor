@@ -47,21 +47,18 @@ mb_http_output('UTF-8');
           }
           break;
           case "update";
-          if (isset($_REQUEST['status']))
           $data = json_decode(file_get_contents('php://input'), true);
-          $patient = $data["patient_id"];
-          $stmt = $mysqli->prepare("INSERT INTO proceedings (patient_id,doctor_id,request_id,status) VALUES(?,?,?,?)");
-          $stmt->bind_param('iiis', $patient,$doctor,$request,$status);
+          $schedule_id = $data["schedule_id"];
+          $patient_notes = $data["patient_notes"];
+          $doctor_notes  = $data["doctor_notes"];
+          $visit_date = $data["visit_date"];
+          $stmt = $mysqli->prepare("UPDATE schedules set visit_date = ?, patient_notes = ?, doctor_notes = ?
+          WHERE schedule_id = ?");
+          $stmt->bind_param('sssi', $visit_date,$patient_notes,$doctor_notes,$schedule_id);
           $stmt->execute();
           $arr = array('rows_affected' => $mysqli->affected_rows);
           echo json_encode($arr);
           //$last_id = $mysqli->insert_id;
-          if ($mysqli->affected_rows == 1)
-          {
-              $stmt = $mysqli->prepare("UPDATE requests set status = '1' WHERE request_id = ?");
-              $stmt->bind_param('i',$request);
-              $stmt->execute();
-          }
           break;
         }
     }
