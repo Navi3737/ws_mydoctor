@@ -53,9 +53,14 @@ mb_http_output('UTF-8');
       $name = $data["name"];
       $phone = $data["phone"];
       $user_type = $data["user_type"];
-
-      $stmt = $mysqli->prepare("UPDATE users SET name = ?, last_name = ?, telephone = ? WHERE user_id = ? ");
-      $stmt->bind_param('sssi', $name, $last_name, $phone, $user_id);
+      if ($data["img_url"] == null) {
+        $img_url = "";
+      }
+      else {
+        $img_url = $data["img_url"];
+      }
+      $stmt = $mysqli->prepare("UPDATE users SET name = ?, last_name = ?, telephone = ?, img_url = ? WHERE user_id = ? ");
+      $stmt->bind_param('ssssi', $name, $last_name, $phone,$img_url, $user_id);
       $stmt->execute();
       $arr = array('rows_affected' => $mysqli->affected_rows);
       $aux = $mysqli->affected_rows;
